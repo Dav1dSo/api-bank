@@ -1,8 +1,9 @@
 import logging
 from factory import db
 from models.entities.users import User
+from src.models.interface.user_repository_interface import UserRepository
 
-class UserRepository:
+class UserRepository(UserRepository):
     def __init__(self, connect) -> None:
         self.__connect = connect
         
@@ -38,3 +39,12 @@ class UserRepository:
         exist_user_balance.balance = self.__new_balance
         
         db.session.commit()
+        
+    def find_user(self, user_id: str) -> tuple[int, str, str]:
+        user_exist = db.session.query(User).filter(User.id == user_id).first()
+        
+        if user_exist is None:
+            return {'error': 'Usuário não encontrado'}, 404
+        
+        return user_exist
+        
